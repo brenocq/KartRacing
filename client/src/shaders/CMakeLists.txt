@@ -1,9 +1,9 @@
 file(GLOB shader_files *.glsl)
 
 macro(copy_shaders shader_files copied_files)
-	message("shader: ${${shader_files}}")
+	#message("shaders: ${${shader_files}}")
 	foreach(shader ${${shader_files}})
-		message("shader: ${shader}")
+		#message("shader: ${shader}")
 		get_filename_component(file_name ${shader} NAME)
 		get_filename_component(full_path ${shader} ABSOLUTE)
 		set(output_dir ${CMAKE_CURRENT_BINARY_DIR})

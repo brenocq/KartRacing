@@ -5,10 +5,16 @@ set(src_files
 	application.cpp
 	window.cpp
 	shader.cpp
+	mesh.cpp
+	texture.cpp
+	camera.cpp
+
+	kart.cpp
 )
 
 set(src_files_helpers
 	helpers/log.cpp
+	helpers/common.cpp
 )
 
 add_executable(${exe_name} 
@@ -20,5 +26,5 @@ target_link_libraries(${exe_name} PRIVATE GLEW::GLEW glfw glm carRacingLib)
 target_include_directories(${exe_name} PRIVATE ${STB_INCLUDE_DIRS})
 
 add_subdirectory(shaders)
-add_dependencies(${exe_name} shaders)
+add_dependencies(${exe_name} shaders assets)
 

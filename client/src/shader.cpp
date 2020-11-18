@@ -3,10 +3,10 @@
 // Date: 2020-11-17                   //
 // SCC0650 - Computação Gráfica (2020)//
 //------------------------------------//
-#include "shader.h"
 #include <fstream>
-#include "defines.h"
-#include "helpers/log.h"
+#include "shader.hpp"
+#include "defines.hpp"
+#include "helpers/log.hpp"
 
 Shader::Shader()
 {
@@ -51,51 +51,61 @@ std::string Shader::readFile(std::string fileName)
 
 void Shader::compileShader(std::string vertexCode, std::string fragmentCode)
 {
-	_shaderId = glCreateProgram();
+	// Create program
+	_programId = glCreateProgram();
 
-	if(!_shaderId)
+	if(!_programId)
 	{
 		Log::error("Shader", "Error creating shader program!");
-		return;
+		exit(1);
 	}
 
-	addShader(_shaderId, vertexCode, GL_VERTEX_SHADER);
-	addShader(_shaderId, fragmentCode, GL_FRAGMENT_SHADER); 
+	// Add shaders
+	addShader(vertexCode, GL_VERTEX_SHADER);
+	addShader(fragmentCode, GL_FRAGMENT_SHADER); 
 
 	GLint result = 0;
 	GLchar eLog[1024] = {0};
 
-	glLinkProgram(_shaderId);
-	glGetProgramiv(_shaderId, GL_LINK_STATUS, &result);
+	// Link program
+	glLinkProgram(_programId);
+	glGetProgramiv(_programId, GL_LINK_STATUS, &result);
 	if(!result)
 	{
-		glGetProgramInfoLog(_shaderId, sizeof(eLog), NULL, eLog);
+		glGetProgramInfoLog(_programId, sizeof(eLog), NULL, eLog);
 		Log::error("Shader", "Error linking program: '" + std::string(eLog)+ "'");
-		return;
+		exit(1);
 	}
 
-	glValidateProgram(_shaderId);
-	glGetProgramiv(_shaderId, GL_VALIDATE_STATUS, &result);
+	// Validade program
+	glValidateProgram(_programId);
+	glGetProgramiv(_programId, GL_VALIDATE_STATUS, &result);
 	if(!result)
 	{
-		glGetProgramInfoLog(_shaderId, sizeof(eLog), NULL, eLog);
+		glGetProgramInfoLog(_programId, sizeof(eLog), NULL, eLog);
 		Log::error("Shader", "Error validating program: '" + std::string(eLog)+ "'");
-		return;
+		exit(1);
 	}
 
 	//---------- Get uniforms ----------//
-	_uniformModel = glGetUniformLocation(_shaderId, "model");
+	_uniformModel = glGetUniformLocation(_programId, "model");
+	_uniformView = glGetUniformLocation(_programId, "view");
+	_uniformProjection = glGetUniformLocation(_programId, "projection");
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Shader::useShader()
 {
-	glUseProgram(_shaderId);
+	glUseProgram(_programId);
 }
 
-void Shader::addShader(GLuint program, std::string shaderCode, GLenum shaderType)
+void Shader::addShader(std::string shaderCode, GLenum shaderType)
 {
+	// Create shader
 	GLuint shader = glCreateShader(shaderType);
 
+	// Compile shader
 	const GLchar* code[1];
 	code[0] = shaderCode.c_str();
 
@@ -113,8 +123,9 @@ void Shader::addShader(GLuint program, std::string shaderCode, GLenum shaderType
 	{
 		glGetShaderInfoLog(shader, sizeof(eLog), NULL, eLog);
 		Log::error("Shader", "Error compiling the " + std::to_string(shaderType)+ " shader: '" + std::string(eLog)+ "'");
-		return;
+		exit(1);
 	}
 
-	glAttachShader(program, shader);
+	// Attach shader to program
+	glAttachShader(_programId, shader);
 }

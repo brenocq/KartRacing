@@ -3,12 +3,16 @@
 // Date: 2020-11-17                   //
 // SCC0650 - Computação Gráfica (2020)//
 //------------------------------------//
-#include <iostream>
-#include "application.hpp"
+#ifndef COMMON_H
+#define COMMON_H
 
-int main()
+#include <glm/glm.hpp>
+
+struct Vertex
 {
-	Application application = Application();
-	application.run();
-	return 0;
-}
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 texCoords;
+};
+
+#endif// COMMON_H

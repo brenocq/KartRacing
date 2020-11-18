@@ -4,10 +4,9 @@
 // Date: 2020-08-20
 // By Breno Cunha Queiroz
 //----------------------------------------
-#include "log.h"
-#include "log.h"
 #include <stdio.h>
-#include "defines.h"
+#include "log.hpp"
+#include "defines.hpp"
 
 Log::Log()
 {

@@ -3,12 +3,4 @@
 // Date: 2020-11-17                   //
 // SCC0650 - Computação Gráfica (2020)//
 //------------------------------------//
-#include <iostream>
-#include "application.hpp"
-
-int main()
-{
-	Application application = Application();
-	application.run();
-	return 0;
-}
+#include "common.hpp"

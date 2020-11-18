@@ -6,10 +6,15 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 #include <vector>
-#include "window.h"
-#include "shader.h"
+#include "window.hpp"
+#include "camera.hpp"
+#include "shader.hpp"
+#include "mesh.hpp"
+#include "texture.hpp"
+#include "kart.hpp"
 
-class Application{
+class Application
+{
 	public:
 		Application();
 		~Application();
@@ -18,14 +23,31 @@ class Application{
 
 	private:
 		void createShaders();
+		void loadAssets();
 
 		//---------- Callbacks ----------//
 		void onKey(int key, int scancode, int action, int mods);
-		void onDraw();
+		void onMouse(double xpos, double ypos);
+		void onDraw(double dt);
 
 		//---------- Objects ----------//
 		Window* _window;
+		Camera* _camera;
 		std::vector<Shader*> _shaders;
+		std::vector<Mesh*> _meshes;
+		std::vector<Texture*> _textures;
+
+		std::vector<Kart*> _karts;
+
+		//---------- Game state ----------//
+		enum Scene
+		{
+			START_SCENE,
+			GARAGE_SCENE,
+			GAME_SCENE
+		};
+		Scene _scene;
+		bool _freeCamera;
 };
 
 #endif// APPLICATION_H

@@ -10,7 +10,8 @@
 #include <iostream>
 #include <functional>
 
-class Window{
+class Window
+{
 	public:
 		Window(std::string name);
 		~Window();
@@ -18,20 +19,28 @@ class Window{
 		void init();
 		void loop();
 		void close();
-		float getRatio();
 		void swapBuffers();
+
+		//---------- Getters and Setters ----------//
+		float getRatio();
+		float getWidth() const { return _width; };
+		float getHeight() const { return _height; };
 
 		//---------- Callbacks ----------//
 		std::function<void(int key, int scancode, int action, int mods)> onKey;
-		std::function<void()> onDraw;
+		std::function<void(double xpos, double ypos)> onMouse;
+		std::function<void(double dt)> onDraw;
 
 	private:
 		static void keyCallback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods);
+		static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 
 		GLFWwindow* _window;
 		std::string _name;
 		int _width;
 		int _height;
+
+		double _time;
 };
 
 #endif// WINDOW_H

@@ -22,6 +22,6 @@ add_library(carRacingLib INTERFACE)
 target_include_directories(carRacingLib INTERFACE lib/)
 
 # Add subdirectories
-#add_subdirectory(assets)
 #add_subdirectory(lib)
+add_subdirectory(assets)
 add_subdirectory(src)
