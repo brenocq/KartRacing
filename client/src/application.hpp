@@ -11,6 +11,7 @@
 #include "shader.hpp"
 #include "mesh.hpp"
 #include "texture.hpp"
+#include "userInterface.hpp"
 #include "kart.hpp"
 
 class Application
@@ -33,6 +34,7 @@ class Application
 		//---------- Objects ----------//
 		Window* _window;
 		Camera* _camera;
+		UserInterface* _ui;
 		std::vector<Shader*> _shaders;
 		std::vector<Mesh*> _meshes;
 		std::vector<Texture*> _textures;
@@ -40,12 +42,6 @@ class Application
 		std::vector<Kart*> _karts;
 
 		//---------- Game state ----------//
-		enum Scene
-		{
-			START_SCENE,
-			GARAGE_SCENE,
-			GAME_SCENE
-		};
 		Scene _scene;
 		bool _freeCamera;
 };

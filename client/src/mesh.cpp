@@ -38,6 +38,7 @@ void Mesh::loadFile(std::string fileName)
 	std::ifstream file(("assets/models/"+fileName).c_str());
 	if(file.is_open())
 	{
+		std::vector<glm::vec3> vertices;
 		std::vector<glm::vec3> normals;
 		std::vector<glm::vec2> texCoords;
 
@@ -50,20 +51,18 @@ void Mesh::loadFile(std::string fileName)
 				continue;
 			else if(code=="v")
 			{
-				Vertex v;
-				v.position.x = std::stof(splitted[1]);
-				v.position.y = std::stof(splitted[2]);
-				v.position.z = std::stof(splitted[3]);
-				//std::cout << "vertex " << v.position.x << " " << v.position.y << " " << v.position.z << std::endl;
-				_vertices.push_back(v);
+				glm::vec3 v;
+				v.x = std::stof(splitted[1]);
+				v.y = std::stof(splitted[2]);
+				v.z = std::stof(splitted[3]);
+				vertices.push_back(v);
 			}
 			else if(code=="vt")
 			{
 				glm::vec2 v;
-				v.x = std::stof(splitted[1]);
-				v.y = std::stof(splitted[2]);
+				v.x = std::stod(splitted[1]);
+				v.y = 1-std::stod(splitted[2]);
 				texCoords.push_back(v);
-				//std::cout << "tex " << _vertices[texIndex-1].texCoords.x << " " << _vertices[texIndex-1].texCoords.y << std::endl;
 			}
 			else if(code=="vn")
 			{
@@ -75,15 +74,23 @@ void Mesh::loadFile(std::string fileName)
 			}
 			else if(code=="f")
 			{
-				for(int i=1;i<(int)splitted.size();i++)
+				// Face with 3 vertices
+				if((int)splitted.size()==4)
 				{
-					std::vector<std::string> values = splitLine(splitted[i],'/');
-					int vert = std::stoi(values[0])-1;
-					int tex = std::stoi(values[1])-1;
-					int normal = std::stoi(values[2])-1;
-					_indices.push_back(vert);
-					_vertices[vert].texCoords = texCoords[tex];
-					_vertices[vert].normal = normals[normal];
+					for(int i=1;i<4;i++)
+					{
+						std::vector<std::string> values = splitLine(splitted[i],'/');
+						int vert = std::stoi(values[0])-1;
+						int tex = std::stoi(values[1])-1;
+						int normal = std::stoi(values[2])-1;
+
+						Vertex v;
+						v.position = vertices[vert];
+						v.texCoords = texCoords[tex];
+						v.normal = normals[normal];
+						_vertices.push_back(v);
+						_indices.push_back(_indices.size());
+					}
 				}
 			}
 			else if(code=="usemtl" || code=="usemat")

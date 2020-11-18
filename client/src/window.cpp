@@ -30,7 +30,7 @@ void Window::init()
     }
 
     //---------- GLFW config ----------//
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
     const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	_width = mode->width;
 	_height = mode->height;
@@ -64,6 +64,12 @@ void Window::init()
 		glfwTerminate();
 		exit(1);
 	}
+
+	//---------- OpenGL global state ----------//
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	Log::success("Window", "Initialized");
 }

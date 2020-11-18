@@ -7,7 +7,7 @@
 #include "defines.hpp"
 
 Application::Application():
-	_scene(GAME_SCENE), _freeCamera(true)
+	_scene(START_SCENE), _freeCamera(true)
 {
 	_window = new Window("Kart Racing - by Brenocq");
 	_window->onKey = [this](const int key, const int scancode, const int action, const int mods) { onKey(key, scancode, action, mods); };
@@ -19,6 +19,8 @@ Application::Application():
 
 	createShaders();
 	loadAssets();
+
+	_ui = new UserInterface(&_scene, _shaders[0], _window->getRatio());
 }
 
 Application::~Application()
@@ -112,6 +114,7 @@ void Application::onKey(int key, int scancode, int action, int mods)
 {
 	if(_freeCamera)
 		_camera->updateOnKey(key, scancode, action, mods);
+	_ui->updateOnKey(key, scancode, action, mods);
 	
 	if(action == GLFW_RELEASE)
 		return;
@@ -127,12 +130,13 @@ void Application::onMouse(double xpos, double ypos)
 {
 	if(_freeCamera)
 		_camera->updateOnMouse(xpos/_window->getWidth(), ypos/_window->getHeight());
+	_ui->updateOnMouse(xpos/_window->getWidth(), ypos/_window->getHeight());
 }
 
 void Application::onDraw(double dt)
 {
 	// Clear window
-	glClearColor(0.2f,0.2f,0.2f,1.0f);
+	glClearColor(0.7f,0.7f,0.7f,1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	_camera->update(dt);
@@ -140,17 +144,34 @@ void Application::onDraw(double dt)
 	// Use shader 0
 	_shaders[0]->useShader();
 
-	// View matrix
-	glUniformMatrix4fv(_shaders[0]->getViewLocation(), 1, GL_FALSE, _camera->getView());
-
-	// Projection matrix
-    glUniformMatrix4fv(_shaders[0]->getProjectionLocation(), 1, GL_FALSE, _camera->getProjection());
-
-	// Draw models
-	for(auto kart : _karts)	
+	switch(_scene)
 	{
-		kart->draw();
+		case START_SCENE:
+			{
+			}
+			break;
+		case GARAGE_SCENE:
+			{
+
+			}
+			break;
+		case GAME_SCENE:
+			{
+				// View matrix
+				glUniformMatrix4fv(_shaders[0]->getViewLocation(), 1, GL_FALSE, _camera->getView());
+
+				// Projection matrix
+				glUniformMatrix4fv(_shaders[0]->getProjectionLocation(), 1, GL_FALSE, _camera->getProjection());
+
+				// Draw models
+				for(auto kart : _karts)	
+				{
+					kart->draw();
+				}
+			}
+			break;
 	}
+	_ui->draw();
 
 	// Swap buffers
 	_window->swapBuffers();

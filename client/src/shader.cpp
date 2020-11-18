@@ -91,8 +91,6 @@ void Shader::compileShader(std::string vertexCode, std::string fragmentCode)
 	_uniformModel = glGetUniformLocation(_programId, "model");
 	_uniformView = glGetUniformLocation(_programId, "view");
 	_uniformProjection = glGetUniformLocation(_programId, "projection");
-
-	glEnable(GL_DEPTH_TEST);
 }
 
 void Shader::useShader()

@@ -31,6 +31,7 @@ void Kart::draw()
 	//---------- Draw extern ----------//
 	glm::mat4 mat = glm::mat4(1.0f);
 	mat = glm::translate(mat, glm::vec3(0.0f, 0.0f, 0.0f));
+	mat = glm::rotate(mat, glm::radians(180.0f) ,glm::vec3(0, 0, 1));
 	mat = glm::scale(mat, glm::vec3(0.1f, 0.1f, 0.1f));
 	mat = glm::transpose(mat);
     glUniformMatrix4fv(_shader->getModelLocation(), 1, GL_TRUE, glm::value_ptr(mat));
@@ -42,6 +43,7 @@ void Kart::draw()
 	//---------- Draw intern ----------//
 	mat = glm::mat4(1.0f);
 	mat = glm::translate(mat, glm::vec3(0.0f, 0.0f, 0.0f));
+	mat = glm::rotate(mat, glm::radians(180.0f) ,glm::vec3(0, 0, 1));
 	mat = glm::scale(mat, glm::vec3(0.1f, 0.1f, 0.1f));
 	mat = glm::transpose(mat);
     glUniformMatrix4fv(_shader->getModelLocation(), 1, GL_TRUE, glm::value_ptr(mat));
@@ -50,14 +52,33 @@ void Kart::draw()
 	internTextures[0]->bind();
 	internMesh->draw();
 
-	//---------- Draw wheel ----------//
-	mat = glm::mat4(1.0f);
-	mat = glm::translate(mat, glm::vec3(0.0f, 0.0f, 0.0f));
-	mat = glm::scale(mat, glm::vec3(0.1f, 0.1f, 0.1f));
-	mat = glm::transpose(mat);
-    glUniformMatrix4fv(_shader->getModelLocation(), 1, GL_TRUE, glm::value_ptr(mat));
-	
-	// Bind texture/VAO and draw
-	wheelTextures[0]->bind();
-	wheelMesh->draw();
+	//---------- Draw back wheels ----------//
+	for(int i=-1;i<=1;i+=2)
+	{
+		mat = glm::mat4(1.0f);
+		mat = glm::translate(mat, glm::vec3(3.3f*i, 0.7f, 5.0f));
+		mat = glm::rotate(mat, glm::radians(180.0f*(i==1)) ,glm::vec3(0, 0, 1));
+		mat = glm::scale(mat, glm::vec3(0.1f, 0.1f, 0.1f));
+		mat = glm::transpose(mat);
+		glUniformMatrix4fv(_shader->getModelLocation(), 1, GL_TRUE, glm::value_ptr(mat));
+		
+		// Bind texture/VAO and draw
+		wheelTextures[0]->bind();
+		wheelMesh->draw();
+	}
+
+	//---------- Draw front wheels ----------//
+	for(int i=-1;i<=1;i+=2)
+	{
+		mat = glm::mat4(1.0f);
+		mat = glm::translate(mat, glm::vec3(3.3f*i, 0.7f, -4.8f));
+		mat = glm::rotate(mat, glm::radians(180.0f*(i==1)) ,glm::vec3(0, 0, 1));
+		mat = glm::scale(mat, glm::vec3(0.1f, 0.1f, 0.1f));
+		mat = glm::transpose(mat);
+		glUniformMatrix4fv(_shader->getModelLocation(), 1, GL_TRUE, glm::value_ptr(mat));
+		
+		// Bind texture/VAO and draw
+		wheelTextures[0]->bind();
+		wheelMesh->draw();
+	}
 }

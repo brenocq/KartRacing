@@ -8,6 +8,7 @@ set(src_files
 	mesh.cpp
 	texture.cpp
 	camera.cpp
+	userInterface.cpp
 
 	kart.cpp
 )

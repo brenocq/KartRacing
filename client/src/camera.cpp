@@ -40,42 +40,36 @@ void Camera::updateOnKey(int key, int scancode, int action, int mods)
 				_movingForward = 0;
 			else
 				_movingForward = 1;
-			//_position += _front*_speed;
 			break;
 		case GLFW_KEY_A:
 			if(action == GLFW_RELEASE)
 				_movingLeft = 0;
 			else
 				_movingLeft = -1;
-			//_position -= glm::normalize(glm::cross(_front, _up)) * _speed;
 			break;
 		case GLFW_KEY_S:
 			if(action == GLFW_RELEASE)
 				_movingForward = 0;
 			else
 				_movingForward = -1;
-			//_position -= _front*_speed;
 			break;
 		case GLFW_KEY_D:
 			if(action == GLFW_RELEASE)
 				_movingLeft = 0;
 			else
 				_movingLeft = 1;
-			//_position += glm::normalize(glm::cross(_front, _up)) * _speed;
 			break;
 		case GLFW_KEY_E:
 			if(action == GLFW_RELEASE)
 				_movingUp = 0;
 			else
 				_movingUp = 1;
-			//_position += _up*_speed;
 			break;
 		case GLFW_KEY_Q:
 			if(action == GLFW_RELEASE)
 				_movingUp = 0;
 			else
 				_movingUp = -1;
-			//_position -= _up*_speed;
 			break;
 	}
 }
