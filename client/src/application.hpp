@@ -13,6 +13,7 @@
 #include "texture.hpp"
 #include "userInterface.hpp"
 #include "kart.hpp"
+#include "garage.hpp"
 
 class Application
 {
@@ -29,6 +30,7 @@ class Application
 		//---------- Callbacks ----------//
 		void onKey(int key, int scancode, int action, int mods);
 		void onMouse(double xpos, double ypos);
+		void onMouseClick(int button, int action, int mods);
 		void onDraw(double dt);
 
 		//---------- Objects ----------//
@@ -40,6 +42,7 @@ class Application
 		std::vector<Texture*> _textures;
 
 		std::vector<Kart*> _karts;
+		Garage* _garage;
 
 		//---------- Game state ----------//
 		Scene _scene;

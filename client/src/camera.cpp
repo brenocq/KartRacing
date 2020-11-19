@@ -8,6 +8,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "camera.hpp"
+#include "helpers/log.hpp"
 
 Camera::Camera(float windowRatio):
 	_ratio(windowRatio), _firstMouse(true)
@@ -119,6 +120,23 @@ void Camera::update(double dt)
 			0.1f,
 			1000.0f
 		);
+}
+
+void Camera::printInfo()
+{
+	Log::info("Camera", "Position: ("
+			+std::to_string(_position.x)+", "
+			+std::to_string(_position.y)+", "
+			+std::to_string(_position.z)+") "+
+			"Up: ("
+			+std::to_string(_up.x)+", "
+			+std::to_string(_up.y)+", "
+			+std::to_string(_up.z)+") "+
+			"Left: ("
+			+std::to_string(_front.x)+", "
+			+std::to_string(_front.y)+", "
+			+std::to_string(_front.z)+") "
+			);
 }
 
 const float* Camera::getView()

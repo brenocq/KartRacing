@@ -11,6 +11,7 @@ set(src_files
 	userInterface.cpp
 
 	kart.cpp
+	garage.cpp
 )
 
 set(src_files_helpers

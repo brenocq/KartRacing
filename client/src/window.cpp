@@ -54,7 +54,8 @@ void Window::init()
 	glfwSetWindowUserPointer(_window, this);
 	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetKeyCallback(_window, keyCallback);
-	glfwSetCursorPosCallback(_window, mouseCallback); // mouse
+	glfwSetCursorPosCallback(_window, mouseCallback);
+	glfwSetMouseButtonCallback(_window, mouseClickCallback);
 
 	//---------- GLEW ----------//
 	if(glewInit())
@@ -124,5 +125,14 @@ void Window::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 	if(_this->onMouse)
 	{
 		_this->onMouse(xpos, ypos);
+	}
+}
+
+void Window::mouseClickCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	Window* const _this = static_cast<Window*>(glfwGetWindowUserPointer(window));
+	if(_this->onMouseClick)
+	{
+		_this->onMouseClick(button, action, mods);
 	}
 }

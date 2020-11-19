@@ -7,11 +7,12 @@
 #include "defines.hpp"
 
 Application::Application():
-	_scene(START_SCENE), _freeCamera(true)
+	_scene(START_SCENE), _freeCamera(false)
 {
 	_window = new Window("Kart Racing - by Brenocq");
 	_window->onKey = [this](const int key, const int scancode, const int action, const int mods) { onKey(key, scancode, action, mods); };
 	_window->onMouse = [this](double xpos, double ypos) { onMouse(xpos, ypos); };
+	_window->onMouseClick = [this](int button, int action, int mods) { onMouseClick(button, action, mods); };
 	_window->onDraw = [this](double dt) { onDraw(dt); };
 	_window->init();
 
@@ -20,7 +21,10 @@ Application::Application():
 	createShaders();
 	loadAssets();
 
-	_ui = new UserInterface(&_scene, _shaders[0], _window->getRatio());
+	_karts.push_back(new Kart(_shaders[0]));
+	_garage = new Garage(_shaders[0]);
+
+	_ui = new UserInterface(&_scene, _shaders[0], _window->getRatio(), _karts[0]);
 }
 
 Application::~Application()
@@ -98,15 +102,19 @@ void Application::loadAssets()
 	Kart::internMesh = new Mesh("kart-intern.obj");
 	Kart::wheelMesh = new Mesh("kart-wheel.obj");
 
-	Kart::externTextures.push_back(new Texture("kart-extern0.png"));
-	Kart::internTextures.push_back(new Texture("kart-intern0.png"));
-	Kart::wheelTextures.push_back(new Texture("kart-wheel0.png"));
+	for(int i=0;i<4;i++)
+		Kart::externTextures.push_back(new Texture("kart-extern"+std::to_string(i)+".png"));
+	for(int i=0;i<16;i++)
+		Kart::internTextures.push_back(new Texture("kart-intern"+std::to_string(i)+".png"));
+	for(int i=0;i<16;i++)
+		Kart::wheelTextures.push_back(new Texture("kart-wheel"+std::to_string(i)+".png"));
+
+	Garage::mesh = new Mesh("garage.obj");
+	Garage::texture = new Texture("garage.png");
 }
 
 void Application::run()
 {
-	_karts.push_back(new Kart(_shaders[0]));
-
 	_window->loop();
 }
 
@@ -120,6 +128,24 @@ void Application::onKey(int key, int scancode, int action, int mods)
 		return;
 	switch(key)
 	{
+		case GLFW_KEY_SPACE:
+			//_camera->printInfo();
+			break;
+		case GLFW_KEY_ENTER:
+			{
+				if(action == GLFW_PRESS)
+				{
+					if(_scene == START_SCENE)
+					{
+						_scene = GARAGE_SCENE;
+					}
+					else if(_scene == GARAGE_SCENE)
+					{
+						_scene = GAME_SCENE;
+					}
+				}
+			}
+			break;
 		case GLFW_KEY_ESCAPE:
 			_window->close();
 			break;
@@ -131,6 +157,11 @@ void Application::onMouse(double xpos, double ypos)
 	if(_freeCamera)
 		_camera->updateOnMouse(xpos/_window->getWidth(), ypos/_window->getHeight());
 	_ui->updateOnMouse(xpos/_window->getWidth(), ypos/_window->getHeight());
+}
+
+void Application::onMouseClick(int button, int action, int mods)
+{
+	_ui->updateOnMouseClick(button, action, mods);
 }
 
 void Application::onDraw(double dt)
@@ -148,11 +179,27 @@ void Application::onDraw(double dt)
 	{
 		case START_SCENE:
 			{
+				_camera->setPosition({-6.990914, 10.844686, 19.464249});
+				_camera->setFront({0.528657, -0.351115, -0.772813});
 			}
 			break;
 		case GARAGE_SCENE:
 			{
+				static float kartAngle=0;
+				kartAngle+=dt*15;
+				if(kartAngle>=360) kartAngle-=360;
 
+				// View matrix
+				glUniformMatrix4fv(_shaders[0]->getViewLocation(), 1, GL_FALSE, _camera->getView());
+
+				// Projection matrix
+				glUniformMatrix4fv(_shaders[0]->getProjectionLocation(), 1, GL_FALSE, _camera->getProjection());
+
+				// Draw models
+				_garage->draw();
+				_karts[0]->setPosition({0,3,0});
+				_karts[0]->setAngle(kartAngle);
+				_karts[0]->draw();
 			}
 			break;
 		case GAME_SCENE:

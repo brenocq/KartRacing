@@ -11,11 +11,12 @@
 #include "mesh.hpp"
 #include "shader.hpp"
 #include "helpers/common.hpp"
+#include "kart.hpp"
 
 class UserInterface
 {
 	public:
-		UserInterface(Scene* scene, Shader* shader, float ratio);
+		UserInterface(Scene* scene, Shader* shader, float ratio, Kart* kart);
 		~UserInterface();
 
 		void loadAssets();
@@ -27,10 +28,12 @@ class UserInterface
 		//---------- Callbacks ----------//
 		void updateOnKey(int key, int scancode, int action, int mods);
 		void updateOnMouse(double xpos, double ypos);
+		void updateOnMouseClick(int button, int action, int mods);
 
 	private:
 		Scene* _scene;
 		Shader* _shader;
+		Kart* _kart;
 		std::vector<Texture*> _textures;
 		std::vector<Texture*> _letters;
 		Mesh* _mesh;// Square mesh to show 2D images

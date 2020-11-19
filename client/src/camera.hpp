@@ -16,9 +16,14 @@ class Camera
 		void updateOnKey(int key, int scancode, int action, int mods);
 		void updateOnMouse(double xpos, double ypos);
 		void update(double dt);
+		void printInfo();
 
 		const float* getView();
 		const float* getProjection();
+
+		//---------- Getters and Setters ----------//
+		void setPosition(glm::vec3 pos) { _position=pos; }
+		void setFront(glm::vec3 front) { _front=front; }
 
 	private:
 		glm::vec3 _position;
