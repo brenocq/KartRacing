@@ -34,7 +34,7 @@ void Texture::loadTexture(std::string fileName)
 	unsigned char *data = stbi_load(("assets/textures/"+fileName).c_str(), &_width, &_height, &_channels, 0); 
 	if(data)
 	{
-		Log::success("Texture", fileName + " loaded successfully: " 
+		Log::info("Texture", fileName + " loaded successfully: " 
 				+ std::to_string(_width) + "px X "
 				+ std::to_string(_height) + "px X "
 				+ std::to_string(_channels) + ".");

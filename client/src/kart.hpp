@@ -9,6 +9,8 @@
 #include "mesh.hpp"
 #include "texture.hpp"
 #include "shader.hpp"
+#include "nlohmann/json.hpp"
+using namespace nlohmann;
 
 class Kart
 {
@@ -27,6 +29,9 @@ class Kart
 
 		//---------- Getters and Setters ----------//
 		void setPosition(glm::vec3 pos) { _position=pos; }
+		glm::vec3 getPosition() const { return _position; }
+		glm::vec3 getFront();
+		glm::vec3 getFrontWheelVector();
 		void setAngle(float angle) { _angle=angle; }
 		void setInternTexIndex(int index) { _internTexIndex=index; }
 		int getInternTexIndex() const { return _internTexIndex; }
@@ -34,17 +39,43 @@ class Kart
 		int getExternTexIndex() const { return _externTexIndex; }
 		void setWheelTexIndex(int index) { _wheelTexIndex=index; }
 		int getWheelTexIndex() const { return _wheelTexIndex; }
+		Shader* getShader() const { return _shader; }
+
+		json getKartJson();
+		void setKartJson(json state);
+
+		//---------- Callbacks ----------//
+		void updatePhysics(float dt);
+		void updateOnKey(int key, int scancode, int action, int mods);
 
 	private:
+		void rotateFrontWheel(float angle);
+
 		Shader* _shader;
 
-		// Body
+		// User control
+		bool _accelerate;
+		bool _brake;
+		int _steeringWheel;
+		
+		// Physiscs
 		glm::vec3 _position;
+		glm::vec3 _velocity;
+		glm::vec3 _acceleration;
+		float _damping;
+
+		glm::vec3 _forceAccum;
+		float _inverseMass;
+
+		// Body
 		float _angle;
 
 		// Wheels
-		float _wheelRotation;
-		float _wheelFrontAngle;
+		float _wheelAngularPosition;
+		float _wheelAngularVelocity;
+		float _frontWheelAngle;
+		float _frontWheelAngularVelocity;
+		float _frontWheelMaxAngle;
 
 		// Textures
 		int _internTexIndex;

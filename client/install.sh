@@ -14,3 +14,4 @@ git checkout 2020.07
 	glfw3:x64-linux \
 	glm:x64-linux \
 	stb:x64-linux \
+	nlohmann-json:x64-linux

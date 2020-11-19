@@ -9,9 +9,11 @@ set(src_files
 	texture.cpp
 	camera.cpp
 	userInterface.cpp
+	client.cpp
 
 	kart.cpp
 	garage.cpp
+	speedway.cpp
 )
 
 set(src_files_helpers
@@ -24,7 +26,7 @@ add_executable(${exe_name}
 	${src_files_helpers} 
 )
 
-target_link_libraries(${exe_name} PRIVATE GLEW::GLEW glfw glm carRacingLib)
+target_link_libraries(${exe_name} PRIVATE GLEW::GLEW glfw glm nlohmann_json nlohmann_json::nlohmann_json kartRacingLib)
 target_include_directories(${exe_name} PRIVATE ${STB_INCLUDE_DIRS})
 
 add_subdirectory(shaders)

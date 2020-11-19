@@ -12,8 +12,10 @@
 #include "mesh.hpp"
 #include "texture.hpp"
 #include "userInterface.hpp"
+#include "client.hpp"
 #include "kart.hpp"
 #include "garage.hpp"
+#include "speedway.hpp"
 
 class Application
 {
@@ -37,12 +39,14 @@ class Application
 		Window* _window;
 		Camera* _camera;
 		UserInterface* _ui;
+		Client* _client;
 		std::vector<Shader*> _shaders;
 		std::vector<Mesh*> _meshes;
 		std::vector<Texture*> _textures;
 
 		std::vector<Kart*> _karts;
 		Garage* _garage;
+		Speedway* _speedway;
 
 		//---------- Game state ----------//
 		Scene _scene;

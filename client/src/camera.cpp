@@ -17,7 +17,7 @@ Camera::Camera(float windowRatio):
 	_up = {0,1,0};
 	_front = {0,0,-1};
 
-	_speed = 20;
+	_speed = 60;
 
 	_yaw = -90;
 	_pitch = 0;

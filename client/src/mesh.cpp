@@ -98,7 +98,7 @@ void Mesh::loadFile(std::string fileName)
 
 			}
 		}
-		Log::success("Mesh", fileName+" loaded successfully: " 
+		Log::info("Mesh", fileName+" loaded successfully: " 
 				+ std::to_string((int)_vertices.size()) + " vertices, "
 				+ std::to_string((int)_indices.size()) + " indices.");
 

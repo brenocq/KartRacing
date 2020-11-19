@@ -23,8 +23,11 @@ Application::Application():
 
 	_karts.push_back(new Kart(_shaders[0]));
 	_garage = new Garage(_shaders[0]);
+	_speedway = new Speedway(_shaders[0]);
 
 	_ui = new UserInterface(&_scene, _shaders[0], _window->getRatio(), _karts[0]);
+	_client = new Client();
+	_client->connectToServer();
 }
 
 Application::~Application()
@@ -111,6 +114,9 @@ void Application::loadAssets()
 
 	Garage::mesh = new Mesh("garage.obj");
 	Garage::texture = new Texture("garage.png");
+
+	Speedway::mesh = new Mesh("speedway0.obj");
+	Speedway::texture = new Texture("speedway0.png");
 }
 
 void Application::run()
@@ -123,6 +129,7 @@ void Application::onKey(int key, int scancode, int action, int mods)
 	if(_freeCamera)
 		_camera->updateOnKey(key, scancode, action, mods);
 	_ui->updateOnKey(key, scancode, action, mods);
+	_karts[0]->updateOnKey(key, scancode, action, mods);
 	
 	if(action == GLFW_RELEASE)
 		return;
@@ -141,6 +148,9 @@ void Application::onKey(int key, int scancode, int action, int mods)
 					}
 					else if(_scene == GARAGE_SCENE)
 					{
+						//_karts[0]->setPosition({-230,1,101});
+						_karts[0]->setPosition({-231,1,59});
+						_karts[0]->setAngle(0);
 						_scene = GAME_SCENE;
 					}
 				}
@@ -166,6 +176,9 @@ void Application::onMouseClick(int button, int action, int mods)
 
 void Application::onDraw(double dt)
 {
+	static double time=0;
+	time+=dt;
+
 	// Clear window
 	glClearColor(0.7f,0.7f,0.7f,1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -204,6 +217,23 @@ void Application::onDraw(double dt)
 			break;
 		case GAME_SCENE:
 			{
+				if(time>0.1)
+				{
+					_client->updateServerState(_karts);
+					time = 0;
+				}
+
+				// Update karts
+				for(auto& kart : _karts)
+					kart->updatePhysics(dt);
+				
+				// Update camera
+				glm::vec3 kartPos = _karts[0]->getPosition();
+				glm::vec3 kartFront = _karts[0]->getFront();
+				glm::vec3 camPos = (kartPos+kartFront*-20.0f)+glm::vec3(0,10,0);
+				_camera->setPosition(camPos);
+				_camera->setFront(glm::normalize(kartPos-camPos));
+
 				// View matrix
 				glUniformMatrix4fv(_shaders[0]->getViewLocation(), 1, GL_FALSE, _camera->getView());
 
@@ -211,10 +241,9 @@ void Application::onDraw(double dt)
 				glUniformMatrix4fv(_shaders[0]->getProjectionLocation(), 1, GL_FALSE, _camera->getProjection());
 
 				// Draw models
-				for(auto kart : _karts)	
-				{
+				_speedway->draw();
+				for(auto& kart : _karts)	
 					kart->draw();
-				}
 			}
 			break;
 	}
