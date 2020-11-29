@@ -11,6 +11,8 @@
 #include "shader.hpp"
 #include "mesh.hpp"
 #include "texture.hpp"
+#include "cubemap.hpp"
+#include "cubeMesh.hpp"
 #include "userInterface.hpp"
 #include "client.hpp"
 #include "kart.hpp"
@@ -43,6 +45,8 @@ class Application
 		std::vector<Shader*> _shaders;
 		std::vector<Mesh*> _meshes;
 		std::vector<Texture*> _textures;
+		CubeMesh* _cubeMesh;
+		Cubemap* _cubemap;
 
 		std::vector<Kart*> _karts;
 		Garage* _garage;
@@ -51,6 +55,7 @@ class Application
 		//---------- Game state ----------//
 		Scene _scene;
 		bool _freeCamera;
+		bool _showFrame;
 };
 
 #endif// APPLICATION_H

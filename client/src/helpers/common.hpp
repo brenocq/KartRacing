@@ -15,6 +15,12 @@ struct Vertex
 	glm::vec2 texCoords;
 };
 
+struct VertexCubemap
+{
+	glm::vec3 position;
+	glm::vec3 texCoords;
+};
+
 enum Scene
 {
 	START_SCENE,

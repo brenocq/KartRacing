@@ -20,6 +20,12 @@ class Speedway
 
 		static Mesh* mesh;
 		static Texture* texture;
+		static Mesh* meshGrass;
+		static Texture* textureGrass;
+		static Mesh* meshGrandstand;
+		static Texture* textureGrandstand;
+		static Mesh* meshPost;
+		static Texture* texturePost;
 
 	private:
 		Shader* _shader;

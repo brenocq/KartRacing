@@ -50,6 +50,7 @@ class Kart
 
 	private:
 		void rotateFrontWheel(float angle);
+		glm::vec3 calcTurnCenter();
 
 		Shader* _shader;
 
@@ -71,6 +72,9 @@ class Kart
 		float _angle;
 
 		// Wheels
+		glm::vec3 _frontWheelPos;
+		glm::vec3 _rearWheelPos;
+
 		float _wheelAngularPosition;
 		float _wheelAngularVelocity;
 		float _frontWheelAngle;

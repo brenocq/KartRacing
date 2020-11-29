@@ -34,6 +34,9 @@ Kart::Kart(Shader* shader):
 	_steeringWheel = 0;
 
 	// Wheels
+	_frontWheelPos = {4.0f, 3.3f, 0.7f};
+	_rearWheelPos = {5.0f, 3.3f, 0.7f};
+
 	_wheelAngularPosition = 0;
 	_wheelAngularVelocity = 0;
 	_frontWheelAngle = 0;
@@ -81,13 +84,13 @@ void Kart::draw()
 	internTextures[_internTexIndex]->bind();
 	internMesh->draw();
 
-	//---------- Draw back wheels ----------//
+	//---------- Draw rear wheels ----------//
 	for(int i=-1;i<=1;i+=2)
 	{
 		mat = glm::mat4(1.0f);
 		mat = glm::translate(mat, _position);
 		mat = glm::rotate(mat, glm::radians(-_angle) ,glm::vec3(0, 1, 0));
-		mat = glm::translate(mat, glm::vec3(3.3f*i, 0.7f, 5.0f));
+		mat = glm::translate(mat, glm::vec3(_rearWheelPos.y*i, _rearWheelPos.z, _rearWheelPos.x));
 		//mat = glm::translate(mat, glm::vec3(3.3f*i*sin(glm::radians(-_angle)), 0.7f, 5.0f*cos(glm::radians(-_angle)))+_position);
 		mat = glm::rotate(mat, glm::radians(180.0f*(i==1)) ,glm::vec3(0, 0, 1));
 		mat = glm::rotate(mat, glm::radians(_wheelAngularPosition*i) ,glm::vec3(1, 0, 0));
@@ -106,7 +109,7 @@ void Kart::draw()
 		mat = glm::mat4(1.0f);
 		mat = glm::translate(mat, _position);
 		mat = glm::rotate(mat, glm::radians(-_angle) ,glm::vec3(0, 1, 0));
-		mat = glm::translate(mat, glm::vec3(3.3f*i, 0.7f, -4.8f));
+		mat = glm::translate(mat, glm::vec3(_frontWheelPos.y*i, _frontWheelPos.z, -_frontWheelPos.x));
 		mat = glm::rotate(mat, glm::radians(180.0f*(i==1)) ,glm::vec3(0, 0, 1));
 		mat = glm::rotate(mat, glm::radians(_frontWheelAngle*i) ,glm::vec3(0, 1, 0));
 		mat = glm::rotate(mat, glm::radians(_wheelAngularPosition*i) ,glm::vec3(1, 0, 0));
@@ -135,6 +138,19 @@ glm::vec3 Kart::getFrontWheelVector()
 //------------------------------//
 //----------- Physics ----------//
 //------------------------------//
+glm::vec3 Kart::calcTurnCenter()
+{
+	if(abs(_frontWheelAngle)<=.1)
+		return {0,0,0};
+
+	float L = _frontWheelPos.x + _rearWheelPos.x;
+	float angTan = tan(glm::radians((float)90-abs(_frontWheelAngle)));
+	if(_frontWheelAngle>0)
+		return glm::vec3(_frontWheelPos.y + angTan*L,-_rearWheelPos.x,0);
+	else
+		return glm::vec3(-(_frontWheelPos.y + angTan*L),-_rearWheelPos.x,0);
+}
+
 void Kart::updatePhysics(float dt)
 {
 	if(_accelerate)
@@ -142,18 +158,29 @@ void Kart::updatePhysics(float dt)
 	if(_brake)
 		_forceAccum += getFront()*-15.0f;
 
-	// Calculate kart rotation
-	//glm::vec3 f = getFront();	
-	//glm::vec3 fw = getFrontWheelVector();	
-	//float dAngle = atan2(f.x*fw.z-f.z*fw.x, f.x*fw.x+f.z*fw.z);
-	_angle+=_frontWheelAngle*dt;
+	glm::vec3 turnCenter = calcTurnCenter();
+	float turnRadius = glm::length(turnCenter);
+	// Add centripetal force
+	//_forceAccum += glm::normalize(glm::vec3(turnCenter.y, turnCenter.x, turnCenter.z))*(_velocity*dt)/turnRadius;
 
 	// Calculate velocity
-	_position += _velocity*dt;
+	_position += getFront()*length(_velocity)*dt;
 	_acceleration = _forceAccum*_inverseMass;
 	_velocity += _acceleration*dt;
 	_velocity *= pow(_damping, dt);
+	_velocity = getFront()*dot(_velocity, getFront());
+	if(glm::length(_velocity)>100)
+		_velocity = glm::normalize(_velocity)*100.0f;
 	_forceAccum = {0,0,0};
+
+	//std::cout << "with " << glm::degrees((glm::length(_velocity)*dt)/turnRadius)*(glm::dot(_acceleration, getFront())>0?-1:1)
+	//			<< "without " << glm::degrees((glm::length(_velocity)*dt)/turnRadius) << std::endl;
+
+	// Rotate kart
+	//glm::vec3 turnCenter = calcTurnCenter();
+	//float turnRadius = glm::length(turnCenter);
+	if(turnRadius>0)
+		_angle+=glm::degrees((std::min(glm::length(_velocity), 100.0f)*dt)/(turnRadius*2))*(_frontWheelAngle>0?1:-1);
 
 	// Update wheel velocity
 	float wheelPerimeter = 9.425f;

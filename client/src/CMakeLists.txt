@@ -7,6 +7,8 @@ set(src_files
 	shader.cpp
 	mesh.cpp
 	texture.cpp
+	cubemap.cpp
+	cubeMesh.cpp
 	camera.cpp
 	userInterface.cpp
 	client.cpp

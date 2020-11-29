@@ -10,6 +10,8 @@
 
 Mesh* Garage::mesh = nullptr;
 Texture* Garage::texture = nullptr;
+Mesh* Garage::meshWardrobe = nullptr;
+Texture* Garage::textureWardrobe = nullptr;
 
 Garage::Garage(Shader* shader):
 	_shader(shader)
@@ -35,4 +37,28 @@ void Garage::draw()
 	// Bind texture/VAO and draw
 	texture->bind();
 	mesh->draw();
+
+	//---------- Draw wardrobe ----------//
+	mat = glm::mat4(1.0f);
+	mat = glm::translate(mat, glm::vec3(20.0f, 0.0f, -15.0f));
+	mat = glm::rotate(mat, glm::radians(0.0f) ,glm::vec3(0, 0, 1));
+	mat = glm::scale(mat, glm::vec3(0.08f, 0.08f, 0.08f));
+	mat = glm::transpose(mat);
+    glUniformMatrix4fv(_shader->getModelLocation(), 1, GL_TRUE, glm::value_ptr(mat));
+	
+	// Bind texture/VAO and draw
+	textureWardrobe->bind();
+	meshWardrobe->draw();
+
+	//---------- Draw wardrobe ----------//
+	mat = glm::mat4(1.0f);
+	mat = glm::translate(mat, glm::vec3(-10.0f, 0.0f, -15.0f));
+	mat = glm::rotate(mat, glm::radians(0.0f) ,glm::vec3(0, 0, 1));
+	mat = glm::scale(mat, glm::vec3(0.08f, 0.08f, 0.08f));
+	mat = glm::transpose(mat);
+    glUniformMatrix4fv(_shader->getModelLocation(), 1, GL_TRUE, glm::value_ptr(mat));
+	
+	// Bind texture/VAO and draw
+	textureWardrobe->bind();
+	meshWardrobe->draw();
 }

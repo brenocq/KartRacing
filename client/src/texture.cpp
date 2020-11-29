@@ -48,7 +48,7 @@ void Texture::loadTexture(std::string fileName)
 		// Generate texture
 		if(_channels == 3)
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		if(_channels == 4)
+		else if(_channels == 4)
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		else
 		{

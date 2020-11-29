@@ -7,7 +7,7 @@
 #include "defines.hpp"
 
 Application::Application():
-	_scene(START_SCENE), _freeCamera(false)
+	_scene(START_SCENE), _freeCamera(false), _showFrame(false)
 {
 	_window = new Window("Kart Racing - by Brenocq");
 	_window->onKey = [this](const int key, const int scancode, const int action, const int mods) { onKey(key, scancode, action, mods); };
@@ -93,10 +93,16 @@ Application::~Application()
 
 void Application::createShaders()
 {
+	// Main shader
 	Shader* shader = new Shader();
 	shader->createFromFiles("main.vert.glsl", "main.frag.glsl");
 	shader->useShader();
 	_shaders.push_back(shader);
+
+	// Sky shader
+	Shader* shaderSky = new Shader();
+	shaderSky->createFromFiles("sky.vert.glsl", "sky.frag.glsl");
+	_shaders.push_back(shaderSky);
 }
 
 void Application::loadAssets()
@@ -114,9 +120,20 @@ void Application::loadAssets()
 
 	Garage::mesh = new Mesh("garage.obj");
 	Garage::texture = new Texture("garage.png");
+	Garage::meshWardrobe = new Mesh("wardrobe.obj");
+	Garage::textureWardrobe = new Texture("wardrobe.png");
 
 	Speedway::mesh = new Mesh("speedway0.obj");
 	Speedway::texture = new Texture("speedway0.png");
+	Speedway::meshGrass = new Mesh("grass.obj");
+	Speedway::textureGrass = new Texture("grass.png");
+	Speedway::meshGrandstand = new Mesh("grandstand.obj");
+	Speedway::textureGrandstand = new Texture("grandstand.png");
+	Speedway::meshPost = new Mesh("post.obj");
+	Speedway::texturePost = new Texture("post.png");
+
+	_cubeMesh = new CubeMesh();
+	_cubemap = new Cubemap("sky", "jpg");
 }
 
 void Application::run()
@@ -154,6 +171,36 @@ void Application::onKey(int key, int scancode, int action, int mods)
 						_scene = GAME_SCENE;
 					}
 				}
+			}
+			break;
+		case GLFW_KEY_F:
+			if(_scene != START_SCENE)
+			{
+				if(!_showFrame)
+				{
+					_showFrame=true;
+					glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+				}
+				else
+				{
+					_showFrame=false;
+					glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+				}
+			}
+			break;
+		case GLFW_KEY_C:
+			if(_scene != START_SCENE)
+			{
+				if(_scene == GARAGE_SCENE)
+				{
+					_camera->setPosition({-6.990914, 10.844686, 19.464249});
+					_camera->setFront({0.528657, -0.351115, -0.772813});
+				}
+
+				if(!_freeCamera)
+					_freeCamera=true;
+				else
+					_freeCamera=false;
 			}
 			break;
 		case GLFW_KEY_ESCAPE:
@@ -231,12 +278,17 @@ void Application::onDraw(double dt)
 				glm::vec3 kartPos = _karts[0]->getPosition();
 				glm::vec3 kartFront = _karts[0]->getFront();
 				glm::vec3 camPos = (kartPos+kartFront*-20.0f)+glm::vec3(0,10,0);
-				_camera->setPosition(camPos);
-				_camera->setFront(glm::normalize(kartPos-camPos));
+				if(!_freeCamera)
+				{
+					_camera->setPosition(camPos);
+					_camera->setFront(glm::normalize(kartPos-camPos));
+				}
 
+
+				//---------- Draw models ----------//
+				_shaders[0]->useShader();
 				// View matrix
 				glUniformMatrix4fv(_shaders[0]->getViewLocation(), 1, GL_FALSE, _camera->getView());
-
 				// Projection matrix
 				glUniformMatrix4fv(_shaders[0]->getProjectionLocation(), 1, GL_FALSE, _camera->getProjection());
 
@@ -244,6 +296,17 @@ void Application::onDraw(double dt)
 				_speedway->draw();
 				for(auto& kart : _karts)	
 					kart->draw();
+				//---------- Draw sky ----------//
+				glDepthFunc(GL_LEQUAL);
+				_shaders[1]->useShader();
+				glUniformMatrix4fv(_shaders[1]->getViewLocation(), 1, GL_FALSE, _camera->getView());
+				glUniformMatrix4fv(_shaders[1]->getProjectionLocation(), 1, GL_FALSE, _camera->getProjection());
+				//glUniformMatrix4fv(_shaders[1]->getModelLocation(), 1, GL_FALSE, _camera->getModel());
+
+				// Draw cube
+				_cubemap->bind();
+				_cubeMesh->draw();
+				glDepthFunc(GL_LESS);
 			}
 			break;
 	}

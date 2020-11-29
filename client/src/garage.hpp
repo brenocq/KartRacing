@@ -20,6 +20,8 @@ class Garage
 
 		static Mesh* mesh;
 		static Texture* texture;
+		static Mesh* meshWardrobe;
+		static Texture* textureWardrobe;
 
 	private:
 		Shader* _shader;
