@@ -37,7 +37,7 @@ void Client::connectToServer()
 	_serverAddr.sin_family = AF_INET;
     _serverAddr.sin_port = htons(PORT);
 	// Convert IPv4 and IPv6 addresses from text to binary form
-    if(inet_pton(AF_INET, "0.0.0.0", &_serverAddr.sin_addr)<=0)
+    if(inet_pton(AF_INET, "18.218.11.188", &_serverAddr.sin_addr)<=0)
     {
 		Log::error("Client", "Invalid address/ Address not supported.");
 		exit(1);

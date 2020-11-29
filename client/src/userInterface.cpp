@@ -4,6 +4,7 @@
 // SCC0650 - Computação Gráfica (2020)//
 //------------------------------------//
 #include "userInterface.hpp"
+#include "letter.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
 
@@ -27,16 +28,6 @@ void UserInterface::loadAssets()
 	_textures.push_back(new Texture("start.png"));//0
 	_textures.push_back(new Texture("cursor.png"));//1
 	_textures.push_back(new Texture("red.png"));//2
-
-	// Load letters
-	_letters.resize(255);
-	for(int i=0; i<=9; i++)
-		_letters['0'+i] = new Texture(std::to_string(i)+".png");
-	for(char i='A'; i<='Z'; i++)
-	{
-		std::string s = "x.png";s[0]=i;
-		_letters[i] = new Texture(s);
-	}
 }
 
 void UserInterface::draw()
@@ -81,15 +72,15 @@ void UserInterface::draw()
 						mat = glm::scale(mat, glm::vec3(w, h, 1.0f));
 						mat = glm::transpose(mat);
 						glUniformMatrix4fv(_shader->getModelLocation(), 1, GL_TRUE, glm::value_ptr(mat));
-						_letters[letter]->bind();
-						_mesh->draw();
+						Letter::letters[letter]->bind();
+						Letter::mesh->draw();
 					}
 				}
 			}
 			break;
 		case GARAGE_SCENE:
 			{
-
+				_kart->setName(_name);
 				//---------- Select intern texture ----------//
 				{
 					float size = 0.1;

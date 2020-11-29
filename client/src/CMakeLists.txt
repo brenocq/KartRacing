@@ -10,6 +10,7 @@ set(src_files
 	cubemap.cpp
 	cubeMesh.cpp
 	camera.cpp
+	letter.cpp
 	userInterface.cpp
 	client.cpp
 

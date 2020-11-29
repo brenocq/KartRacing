@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
+#include "letter.hpp"
 
 Mesh* Kart::externMesh = nullptr;
 Mesh* Kart::internMesh = nullptr;
@@ -18,7 +19,7 @@ std::vector<Texture*> Kart::internTextures = std::vector<Texture*>();
 std::vector<Texture*> Kart::wheelTextures = std::vector<Texture*>();
 
 Kart::Kart(Shader* shader):
-	_shader(shader)
+	_shader(shader), _name("ANONYMOUS")
 {
 	_position = {0,0,0};
 	_angle = 0;
@@ -120,6 +121,31 @@ void Kart::draw()
 		// Bind texture/VAO and draw
 		wheelTextures[_wheelTexIndex]->bind();
 		wheelMesh->draw();
+	}
+
+	//---------- Draw name ----------//
+	{
+		int size = (int)_name.size();
+		float w = 0.4;
+		float h = 0.8;
+		float y = 8;
+		for(int i=0; i<size; i++)
+		{
+			char letter = _name[i];
+			if(letter==' ')
+				continue;
+			mat = glm::mat4(1.0f);
+			mat = glm::translate(mat, _position);
+			mat = glm::rotate(mat, glm::radians(-_angle) ,glm::vec3(0, 1, 0));
+			mat = glm::translate(mat, glm::vec3(-w*size+i*w*2, y, -0.2f));
+			mat = glm::scale(mat, glm::vec3(w, h, 1.0f));
+			mat = glm::transpose(mat);
+			glUniformMatrix4fv(_shader->getModelLocation(), 1, GL_TRUE, glm::value_ptr(mat));
+			if(Letter::letters[letter]!=nullptr)
+				Letter::letters[letter]->bind();
+			if(Letter::mesh!=nullptr)
+				Letter::mesh->draw();
+		}
 	}
 }
 
@@ -238,6 +264,8 @@ json Kart::getKartJson()
 	messageJson["kart"]["pos"] = {_position.x,_position.y,_position.z};
 	messageJson["kart"]["vel"] = {_velocity.x,_velocity.y,_velocity.z};
 	messageJson["kart"]["acc"] = {_acceleration.x,_acceleration.y,_acceleration.z};
+	messageJson["kart"]["angle"] = _angle;
+	messageJson["kart"]["name"] = _name;
 	messageJson["kart"]["wheel"] = {};
 	messageJson["kart"]["wheel"]["angPos"] = _wheelAngularPosition;
 	messageJson["kart"]["wheel"]["angVel"] = _wheelAngularVelocity;
@@ -266,6 +294,8 @@ void Kart::setKartJson(json state)
 	_acceleration.x = state["kart"]["acc"][0];
 	_acceleration.y = state["kart"]["acc"][1];
 	_acceleration.z = state["kart"]["acc"][2];
+	_angle = state["kart"]["angle"];
+	_name = state["kart"]["name"];
 	_wheelAngularPosition = state["kart"]["wheel"]["angPos"];
 	_wheelAngularVelocity = state["kart"]["wheel"]["angVel"];
 	_frontWheelAngle = state["kart"]["wheel"]["ftAngle"];

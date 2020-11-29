@@ -6,6 +6,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 #include <vector>
+#include <thread>
 #include "window.hpp"
 #include "camera.hpp"
 #include "shader.hpp"
@@ -30,6 +31,7 @@ class Application
 	private:
 		void createShaders();
 		void loadAssets();
+		static void communicateServer(std::vector<Kart*>& karts);
 
 		//---------- Callbacks ----------//
 		void onKey(int key, int scancode, int action, int mods);
@@ -41,7 +43,6 @@ class Application
 		Window* _window;
 		Camera* _camera;
 		UserInterface* _ui;
-		Client* _client;
 		std::vector<Shader*> _shaders;
 		std::vector<Mesh*> _meshes;
 		std::vector<Texture*> _textures;
@@ -56,6 +57,9 @@ class Application
 		Scene _scene;
 		bool _freeCamera;
 		bool _showFrame;
+
+		//---------- Server thread ----------//
+		std::thread* _serverThread;
 };
 
 #endif// APPLICATION_H

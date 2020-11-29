@@ -5,6 +5,7 @@
 //------------------------------------//
 #include "application.hpp"
 #include "defines.hpp"
+#include "letter.hpp"
 
 Application::Application():
 	_scene(START_SCENE), _freeCamera(false), _showFrame(false)
@@ -26,8 +27,8 @@ Application::Application():
 	_speedway = new Speedway(_shaders[0]);
 
 	_ui = new UserInterface(&_scene, _shaders[0], _window->getRatio(), _karts[0]);
-	_client = new Client();
-	_client->connectToServer();
+
+	_serverThread = new std::thread(communicateServer, std::ref(_karts));
 }
 
 Application::~Application()
@@ -91,6 +92,14 @@ Application::~Application()
 	}
 }
 
+void Application::communicateServer(std::vector<Kart*>& karts)
+{
+	Client* client = new Client();
+	client->connectToServer();
+	while(true)
+		client->updateServerState(karts);
+}
+
 void Application::createShaders()
 {
 	// Main shader
@@ -134,6 +143,19 @@ void Application::loadAssets()
 
 	_cubeMesh = new CubeMesh();
 	_cubemap = new Cubemap("sky", "jpg");
+
+	// Letters
+	Letter::mesh = new Mesh("square.obj");
+
+	// Load letters
+	Letter::letters.resize(255);
+	for(int i=0; i<=9; i++)
+		Letter::letters['0'+i] = new Texture(std::to_string(i)+".png");
+	for(char i='A'; i<='Z'; i++)
+	{
+		std::string s = "x.png";s[0]=i;
+		Letter::letters[i] = new Texture(s);
+	}
 }
 
 void Application::run()
@@ -223,9 +245,6 @@ void Application::onMouseClick(int button, int action, int mods)
 
 void Application::onDraw(double dt)
 {
-	static double time=0;
-	time+=dt;
-
 	// Clear window
 	glClearColor(0.7f,0.7f,0.7f,1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -264,12 +283,6 @@ void Application::onDraw(double dt)
 			break;
 		case GAME_SCENE:
 			{
-				if(time>0.1)
-				{
-					_client->updateServerState(_karts);
-					time = 0;
-				}
-
 				// Update karts
 				for(auto& kart : _karts)
 					kart->updatePhysics(dt);
@@ -296,12 +309,12 @@ void Application::onDraw(double dt)
 				_speedway->draw();
 				for(auto& kart : _karts)	
 					kart->draw();
+
 				//---------- Draw sky ----------//
 				glDepthFunc(GL_LEQUAL);
 				_shaders[1]->useShader();
 				glUniformMatrix4fv(_shaders[1]->getViewLocation(), 1, GL_FALSE, _camera->getView());
 				glUniformMatrix4fv(_shaders[1]->getProjectionLocation(), 1, GL_FALSE, _camera->getProjection());
-				//glUniformMatrix4fv(_shaders[1]->getModelLocation(), 1, GL_FALSE, _camera->getModel());
 
 				// Draw cube
 				_cubemap->bind();

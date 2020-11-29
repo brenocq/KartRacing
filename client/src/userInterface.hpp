@@ -35,7 +35,6 @@ class UserInterface
 		Shader* _shader;
 		Kart* _kart;
 		std::vector<Texture*> _textures;
-		std::vector<Texture*> _letters;
 		Mesh* _mesh;// Square mesh to show 2D images
 
 		// Window
@@ -46,8 +45,6 @@ class UserInterface
 		glm::vec2 _mousePos;
 		glm::vec2 _realMousePos;
 		glm::vec2 _lastMousePos;
-
-		// Keyboard
 		
 		// Start Scene variables
 		std::string _name;

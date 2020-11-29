@@ -28,6 +28,7 @@ class Kart
 		static std::vector<Texture*> wheelTextures;
 
 		//---------- Getters and Setters ----------//
+		void setName(std::string name) { _name=name; }
 		void setPosition(glm::vec3 pos) { _position=pos; }
 		glm::vec3 getPosition() const { return _position; }
 		glm::vec3 getFront();
@@ -53,6 +54,7 @@ class Kart
 		glm::vec3 calcTurnCenter();
 
 		Shader* _shader;
+		std::string _name;
 
 		// User control
 		bool _accelerate;

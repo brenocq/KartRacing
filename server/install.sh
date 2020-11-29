@@ -9,5 +9,4 @@ cd vcpkg.linux
 git checkout 2020.07
 ./bootstrap-vcpkg.sh
 
-./vcpkg install \          
-    nlohmann-json:x64-linux
+./vcpkg install nlohmann-json:x64-linux
