@@ -190,7 +190,27 @@ void Kart::updatePhysics(float dt)
 	//_forceAccum += glm::normalize(glm::vec3(turnCenter.y, turnCenter.x, turnCenter.z))*(_velocity*dt)/turnRadius;
 
 	// Calculate velocity
-	_position += getFront()*length(_velocity)*dt;
+	float maxDist = 245;
+	glm::vec3 testPosition = _position+getFront()*length(_velocity)*dt;
+	if(testPosition.z>=-maxDist && testPosition.z<=maxDist)
+	{
+		if(testPosition.x>=-maxDist && testPosition.x<=maxDist)
+			_position += getFront()*length(_velocity)*dt;
+	}
+	else if(testPosition.z<-maxDist)
+	{
+		glm::vec3 center = {0,0,-250};
+		float dist = glm::length(testPosition-center);
+		if(dist<maxDist)
+			_position += getFront()*length(_velocity)*dt;
+	}
+	else if(testPosition.z>maxDist)
+	{
+		glm::vec3 center = {0,0,250};
+		float dist = glm::length(testPosition-center);
+		if(dist<maxDist)
+			_position += getFront()*length(_velocity)*dt;
+	}
 	_acceleration = _forceAccum*_inverseMass;
 	_velocity += _acceleration*dt;
 	_velocity *= pow(_damping, dt);
